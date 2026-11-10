@@ -1,0 +1,63 @@
+name: CDK Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - testing
+      - sandbox
+    paths-ignore:
+      - '.github/**'
+
+permissions:
+  id-token: write
+  contents: read
+  packages: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set AWS Role ARN
+        id: set-role
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          ACCOUNTS=$(echo '${{ vars.AWS_ACCOUNTS }}' | jq -c .)
+
+          if [ "$BRANCH" = "main" ]; then
+            account=$(echo "$ACCOUNTS" | jq -r '.production // .training')
+            PROD_ACCOUNT=$(echo "$ACCOUNTS" | jq -r '.production // empty')
+            if [ -z "$PROD_ACCOUNT" ]; then
+              ENVIRONMENT="training"
+            else
+              ENVIRONMENT="production"
+            fi
+          else
+            account=$(echo "$ACCOUNTS" | jq -r --arg br "$BRANCH" '.[$br]')
+            ENVIRONMENT="$BRANCH"
+          fi
+
+          echo "role_arn=arn:aws:iam::${account}:role/gh-${{ github.event.repository.name }}-role" >> $GITHUB_OUTPUT
+          echo "stage=$ENVIRONMENT" >> $GITHUB_OUTPUT
+          echo "account=$account" >> $GITHUB_OUTPUT
+
+      - name: Deploy with CDK
+        uses: alegradev/alegra-actions/.github/actions/cdk-deploy@v1.1.9
+        with:
+          aws-role-arn: ${{ steps.set-role.outputs.role_arn }}
+          aws-region: us-east-1
+          node-version: 24
+          working-directory: .
+          stage: ${{ steps.set-role.outputs.stage }}
+
+        env:
+          GITHUB_TOKEN: ${{ secrets.AL_NPM_TOKEN_CLOUD }}
+          AWS_ACCOUNT_ID: ${{ steps.set-role.outputs.account }}
+          STAGE: ${{ steps.set-role.outputs.stage }}
+          AWS_REGION: us-east-1
