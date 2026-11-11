@@ -6,6 +6,7 @@ import { IStackBasicProps } from '../../interfaces/IStackProps';
 import { ExamplesTable } from './ExamplesTable';
 import { OutboxTable } from './OutboxTable';
 import { OutboxIntegrationTestTable } from './OutboxIntegrationTestTable';
+import { TrainingTable } from './TrainingTable';
 import { generateOutputName, generateTableName } from '../../utils/utils';
 import { Tags } from 'aws-cdk-lib';
 import { CfnOutput } from 'aws-cdk-lib/core';
@@ -18,6 +19,7 @@ export class DynamoStacks {
     tables[DynamoTableKeys.OUTBOX] = OutboxTable.build(props);
     tables[DynamoTableKeys.OUTBOX_INTEGRATION_TEST] =
       OutboxIntegrationTestTable.build(props);
+    tables[DynamoTableKeys.TRAINING] = TrainingTable.build(props);
 
     // Generate outputs for table ARNs
     Object.entries(tables).forEach(([tableKey, table]) => {
