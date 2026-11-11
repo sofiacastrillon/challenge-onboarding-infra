@@ -7,11 +7,11 @@ dotenv.config();
 const app = new cdk.App();
 
 // NOTE: Ensure the infra PROJECT_NAME match with the backend PROJECT_NAME to facilitate the follow up.
-export const PROJECT_NAME = 'cdk-example';
+export const PROJECT_NAME = 'challenge-onboarding-sofia';
 
 // IMPORTANT: STACK_NAME must not be the same as the PROJECT_NAME because it will
 // be usedto create the stack name and may collide with Backend Project Stack.
-export const STACK_NAME = 'cdk-example-infra';
+export const STACK_NAME = 'challenge-onboarding-sofia-infra';
 
 if (
   !process.env.STAGE ||
