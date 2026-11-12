@@ -2,30 +2,23 @@ import { IStackBasicProps } from '../../interfaces/IStackProps';
 import { SqsResources, SqsQueueKeys } from '../../interfaces/ISqsResources';
 import { SqsSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { SnsResources, SNS_KEYS } from '../../interfaces/ISnsResources';
-import { ExampleEntityQueue } from './example/ExampleEntityQueue';
 import { TrainingQueue } from './training/TrainingQueue';
 import { generateOutputName } from '../../utils/utils';
 import { CfnOutput } from 'aws-cdk-lib/core';
 import { SubscriptionFilter } from 'aws-cdk-lib/aws-sns';
 
 export const TOPIC_TO_QUEUE_BINDING = {
-  [SNS_KEYS.EXAMPLE_ENTITY]: [SqsQueueKeys.EXAMPLE_ENTITY],
   [SNS_KEYS.TRAINING]: [SqsQueueKeys.TRAINING],
 };
 
-export const TOPIC_TO_QUEUE_BINDING_WITH_FILTERS = {
-  [SNS_KEYS.EXAMPLE_ENTITY]: {
-    [SqsQueueKeys.EXAMPLE_ENTITY]: {
-      eventTypes: ['example-event'],
-    },
-  },
-};
+export const TOPIC_TO_QUEUE_BINDING_WITH_FILTERS: Record<
+  string,
+  Record<string, { eventTypes: string[] }>
+> = {};
 
 export class SqsStacks {
   static build(props: IStackBasicProps): SqsResources {
     const queues: SqsResources = {};
-
-    queues[SqsQueueKeys.EXAMPLE_ENTITY] = ExampleEntityQueue.build(props);
 
     const training = TrainingQueue.build(props);
     queues[SqsQueueKeys.TRAINING] = training.queue;
