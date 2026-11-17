@@ -61,3 +61,6 @@ jobs:
           AWS_ACCOUNT_ID: ${{ steps.set-role.outputs.account }}
           STAGE: ${{ steps.set-role.outputs.stage }}
           AWS_REGION: us-east-1
+          VPC_ID: ${{ vars.VPC_ID }}
+          SUBNET_ID_1: ${{ vars.SUBNET_ID_1 }}
+          SUBNET_ID_2: ${{ vars.SUBNET_ID_2 }}

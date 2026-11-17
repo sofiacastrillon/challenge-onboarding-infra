@@ -16,7 +16,8 @@ export class InfrastructureStack extends Stack {
     const tags = getResourceTags({
       Project: PROJECT_NAME,
       ProjectName: PROJECT_NAME, // Para los proyectos que ya usaban ProjectName, para no perder el historico del cost explorer
-      Repository: 'https://github.com/alegradev/cdk-example',
+      Repository:
+        'https://github.com/sofiacastrillon/challenge-onboarding-infra',
       Environment: props.stage,
       Owner: 'Ledger', // Validar en https://opsless.alegra.com/ el nombre del owner
       IsCritical: 'true',
